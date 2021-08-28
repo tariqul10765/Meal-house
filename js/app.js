@@ -1,5 +1,4 @@
 window.onload = function() {
-    console.log('hello');
     document.getElementById('spinner').style.display = 'none';
 };
 
@@ -11,18 +10,17 @@ const displayMeals = meals => {
     const mealDetails = document.getElementById('meal-details');
     mealDetails.textContent = '';
 
-    // console.log(meals);
     meals.forEach(meal => {
-        // console.log(meal.strMeal);
+        
         const div = document.createElement('div');
         div.classList.add('col-sm-3');
         
         div.innerHTML = `
-            <div class="card mb-3" onclick = "loadMealDetails(${meal.idMeal})">
+            <div class="card mb-3">
                 <img src="${meal.strMealThumb}" alt="">
                 <div class="card-body">
                     <h5 class="card-title">${meal.strMeal}</h5>
-                    
+                    <button type="button" class="btn btn-primary" onclick = "loadMealDetails(${meal.idMeal})">see details</button>
                 </div>  
             </div>
         `
@@ -40,9 +38,8 @@ const displayMealDetails = meal => {
     mealDetails.textContent = '';
 
     meal.forEach(meal => {
-        // console.log(meal.strMeal);
+        
         const div = document.createElement('div');
-        //div.classList.add('col-sm-3');
         const ingredientList = ingredientUl(meal);
         div.innerHTML = `
             <img width="100%" height="400" src="${meal.strMealThumb}" alt="">
@@ -50,7 +47,6 @@ const displayMealDetails = meal => {
             <p>${meal.strInstructions}</p>
             <h5>Meal Ingredients</h5>
         `
-        // console.log(ingredientUl(meal));
         mealDetails.appendChild(div);
         mealDetails.appendChild(ingredientList);
     })
@@ -75,11 +71,17 @@ loadAllTypesMeals();
  */
  const loadSearchByName = async() => {
     const searchText = document.getElementById('search-text').value;
-    const data = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchText}`);
-    const jsonData = await data.json();
-    // console.log(jsonData);
+    if(searchText){
+        const data = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchText}`);
+        const jsonData = await data.json();
 
-    displayMeals(jsonData.meals);
+        if(jsonData.meals){
+            displayMeals(jsonData.meals);
+        }
+        else alert('This meal is not found.')
+        
+    }
+    
 
 }
 
@@ -92,7 +94,6 @@ loadAllTypesMeals();
 const loadMealDetails = async (id) => {
     const data = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
     const jsonData = await data.json();
-    // console.log(jsonData.meals);
 
     displayMealDetails(jsonData.meals);
 }
@@ -102,9 +103,7 @@ const loadMealDetails = async (id) => {
 const ingredientUl = meal => {
     let ul = document.createElement('ul');
     for(let i=1;i<=20;i++){
-        // console.log(meal['strIngredient1']);
         const mealIngredient = document.createElement('li');
-        //mealIngredient.classList.add('fw-bolder');
         const ingredient = `strIngredient${i}`;
         const measure = `strMeasure${i}`
         
